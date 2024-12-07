@@ -10,7 +10,7 @@ Margie's Travel에서 관리하는 임대 부동산 앱은 부동산 관리자�
 
 ## 시작하기 전에
 
-관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요하며 해당 구독에서 Azure OpenAI 액세스에 대한 승인을 받아야 합니다. Azure OpenAI 액세스가 필요한 경우 [Azure OpenAI 제한된 액세스](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access) 페이지에서 신청하세요.
+관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요합니다.
 
 ### Azure 구독에 리소스 배포
 
@@ -49,9 +49,9 @@ Margie's Travel에서 관리하는 임대 부동산 앱은 부동산 관리자�
     ```bash
     a=()
     for i in {a..z} {A..Z} {0..9}; 
-       do
-       a[$RANDOM]=$i
-    done
+        do
+        a[$RANDOM]=$i
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD

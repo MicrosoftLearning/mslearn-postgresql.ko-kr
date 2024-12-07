@@ -25,7 +25,7 @@ lab:
 
 ## 시작하기 전에
 
-관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요하며 해당 구독에서 Azure OpenAI 액세스에 대한 승인을 받아야 합니다. Azure OpenAI 액세스가 필요한 경우 [Azure OpenAI 제한된 액세스](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access) 페이지에서 신청하세요.
+관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요합니다.
 
 ### Azure 구독에 리소스 배포
 
@@ -66,7 +66,7 @@ lab:
     for i in {a..z} {A..Z} {0..9}; 
         do
         a[$RANDOM]=$i
-    done
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
@@ -298,8 +298,8 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
     ```sql
     SELECT id, name
-    FROM listings, unnest(entities) e
-    WHERE e.text LIKE '%basement%'
+    FROM listings, unnest(listings.entities) AS e
+    WHERE e.text LIKE '%roof%deck%'
     LIMIT 10;
     ```
 
@@ -356,8 +356,8 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
     ```sql
     UPDATE listings
     SET
-     description_pii_safe = pii.redacted_text,
-     pii_entities = pii.entities
+        description_pii_safe = pii.redacted_text,
+        pii_entities = pii.entities
     FROM (SELECT id, description FROM listings WHERE description_pii_safe IS NULL OR pii_entities IS NULL ORDER BY id LIMIT 100) subset,
     LATERAL azure_cognitive.recognize_pii_entities(subset.description, 'en-us') as pii
     WHERE listings.id = subset.id;
