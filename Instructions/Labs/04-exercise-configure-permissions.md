@@ -81,7 +81,7 @@ Azure Database for PostgreSQL에서 사용할 Azure Data Studio를 설치하려�
 
 ### Zoo 데이터베이스 만들기
 
-1. 연습 스크립트 파일이 있는 폴더로 이동하거나 [MSLearn PostgreSQL Labs](https://github.com/MicrosoftLearning/mslearn-postgresql/Allfiles/Labs/02)에서 **Lab2_ZooDb.sql**을 다운로드합니다.
+1. 연습 스크립트 파일이 있는 폴더로 이동하거나 [MSLearn PostgreSQL Labs](https://github.com/MicrosoftLearning/mslearn-postgresql/blob/main/Allfiles/Labs/02)에서 **Lab2_ZooDb.sql**을 다운로드합니다.
 1. Azure Data Studio가 열려 있지 않으면 엽니다.
 1. **파일**, **파일 열기**를 선택하고 스크립트를 저장한 폴더로 이동합니다. **../Allfiles/Labs/02/Lab2_ZooDb.sql**와 **열기**를 선택합니다. 신뢰 경고가 표시되면 **열기**를 선택합니다.
 1. 스크립트를 실행합니다. zoodb 데이터베이스가 만들어집니다.
