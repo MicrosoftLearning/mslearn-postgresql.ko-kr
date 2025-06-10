@@ -237,7 +237,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
     서버 이름은 Azure Portal의 **개요**에서 찾을 수 있으며, bicep 스크립트 또는 Azure 에서 출력으로 확인할 수 있습니다.
 
     ```sql
-   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin postgres
+   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin adventureworks
     ```
 
     이전에 복사한 관리자 계정의 비밀번호를 입력하라는 메시지가 표시됩니다.

@@ -6,15 +6,15 @@ lab:
 
 # Azure OpenAI를 사용하여 벡터 포함 생성
 
-의미 체계 검색을 수행하려면 먼저 모델에서 임베딩 벡터를 생성하고 벡터 데이터베이스에 저장한 다음 임베딩을 쿼리해야 합니다. 데이터베이스를 만들고, 샘플 데이터로 채우고, 해당 목록에 대해 의미 체계 검색을 실행합니다.
+의미 체계 검색을 수행하려면 먼저 모델에서 포함 벡터를 생성하고 벡터 데이터베이스에 저장한 다음 포함을 쿼리해야 합니다. 데이터베이스를 만들고, 샘플 데이터로 채우고, 해당 목록에 대해 의미 체계 검색을 실행합니다.
 
-이 연습이 끝나면 `vector` 및 `azure_ai` 확장을 사용하도록 설정된 Azure Database for PostgreSQL 유연한 서버 인스턴스를 갖게 됩니다. [Seattle Airbnb Open Data](https://www.kaggle.com/datasets/airbnb/seattle?select=listings.csv) 데이터 집합의 `listings` 테이블에 대한 임베딩을 생성합니다. 또한 쿼리의 임베딩 벡터를 생성하고 벡터 코사인 거리 검색을 수행하여 이러한 목록에 대해 의미 체계 검색을 실행합니다.
+이 연습이 끝나면 `vector` 및 `azure_ai` 확장을 사용하도록 설정된 Azure Database for PostgreSQL 유연한 서버 인스턴스를 갖게 됩니다. [Seattle Airbnb Open Data](https://www.kaggle.com/datasets/airbnb/seattle?select=listings.csv) 데이터 집합의 `listings` 테이블에 대한 포함을 생성합니다. 또한 쿼리의 포함 벡터를 생성하고 벡터 코사인 거리 검색을 수행하여 이러한 목록에 대해 의미 체계 검색을 실행합니다.
 
 ## 시작하기 전에
 
-관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요하며 해당 구독에서 Azure OpenAI 액세스에 대한 승인을 받아야 합니다. Azure OpenAI 액세스가 필요한 경우 [Azure OpenAI 제한된 액세스](https://learn.microsoft.com/legal/cognitive-services/openai/limited-access) 페이지에서 신청하세요.
+관리 권한이 있는 [Azure 구독](https://azure.microsoft.com/free)이 필요합니다.
 
-### Azure 구독에 리소스 배포
+### Azure 구독에서 리소스 배포
 
 이 단계에서는 Azure Cloud Shell에서 Azure CLI 명령을 사용하여 리소스 그룹을 만들고 Bicep 스크립트를 실행하여 이 연습을 완료하는 데 필요한 Azure 서비스를 Azure 구독에 배포하는 방법을 안내합니다.
 
@@ -24,9 +24,9 @@ lab:
 
 2. Azure Portal 도구 모음의 **Cloud Shell** 아이콘을 선택하여 브라우저 창 아래쪽에 새 [Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/overview) 창을 엽니다.
 
-    ![Cloud Shell 아이콘을 빨간색 상자로 강조 표시한 Azure 도구 모음의 스크린샷.](media/13-portal-toolbar-cloud-shell.png)
+    ![Cloud Shell 아이콘을 빨간색 상자로 강조 표시한 Azure 도구 모음을 보여주는 스크린샷.](media/13-portal-toolbar-cloud-shell.png)
 
-    메시지가 표시되는 경우 *Bash* 셸을 여는 데 필요한 옵션을 선택합니다. 이전에 *PowerShell* 콘솔을 사용한 적이 있다면 이것을 *Bash* 셸로 전환합니다.
+    메시지가 표시되면 *Bash* 셸을 여는 데 필요한 옵션을 선택합니다. 이전에 *PowerShell* 콘솔을 사용한 경우 *Bash* 셸로 전환합니다.
 
 3. Cloud Shell 프롬프트에서 다음을 입력하여 연습 리소스가 포함된 GitHub 리포지토리를 복제합니다.
 
@@ -34,7 +34,7 @@ lab:
     git clone https://github.com/MicrosoftLearning/mslearn-postgresql.git
     ```
 
-4. 그 다음 Azure CLI 명령을 사용하여 Azure 리소스를 만들 때 중복 입력을 줄이기 위해 변수를 정의하는 세 가지 명령을 실행합니다. 이 변수는 리소스 그룹에 할당할 이름(`RG_NAME`), 리소스를 배포할 Azure 지역(`REGION`), PostgreSQL 관리자 로그인용 임의 생성 암호(`ADMIN_PASSWORD`)를 나타냅니다.
+4. 다음으로, Azure CLI 명령을 사용하여 Azure 리소스를 만들 때 중복 입력을 줄이기 위해 변수를 정의하는 세 가지 명령을 실행합니다. 이 변수는 리소스 그룹에 할당할 이름(`RG_NAME`), 리소스를 배포할 Azure 지역(`REGION`), PostgreSQL 관리자 로그인용 임의 생성 암호(`ADMIN_PASSWORD`)를 나타냅니다.
 
     첫 번째 명령에서는 해당 변수에 `eastus` 지역을 할당하지만, 원하는 위치로 바꿀 수도 있습니다. 그러나 기본값을 바꾸는 경우 다른 [추상 요약을 지원하는 Azure 지역](https://learn.microsoft.com/azure/ai-services/language-service/summarization/region-support)을 선택해야 이 학습 경로의 모듈에 있는 모든 작업을 완료할 수 있습니다.
 
@@ -55,13 +55,13 @@ lab:
     for i in {a..z} {A..Z} {0..9}; 
         do
         a[$RANDOM]=$i
-    done
+        done
     ADMIN_PASSWORD=$(IFS=; echo "${a[*]::18}")
     echo "Your randomly generated PostgreSQL admin user's password is:"
     echo $ADMIN_PASSWORD
     ```
 
-5. 두 개 이상의 Azure 구독에 액세스할 수 있고 기본 구독이 이 연습에 대한 리소스 그룹 및 기타 리소스를 만드는 데 사용할 구독이 아닌 경우, 이 명령을 실행할 때 적절한 구독을 설정하고 `<subscriptionName|subscriptionId>` 토큰을 사용할 구독의 이름 또는 ID로 바꿉니다.
+5. 두 개 이상의 Azure 구독에 액세스할 수 있고 기본 구독이 이 연습에 대한 리소스 그룹 및 기타 리소스를 만드는 데 사용할 구독이 아닌 경우, 이 명령을 실행하여 적절한 구독을 설정하고 `<subscriptionName|subscriptionId>` 토큰을 사용할 구독의 이름 또는 ID로 바꿉니다.
 
     ```azurecli
     az account set --subscription <subscriptionName|subscriptionId>
@@ -121,9 +121,9 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
 1. [Azure Portal](https://portal.azure.com/)에서 새로 만든 Azure Database for PostgreSQL - 유연한 서버로 이동합니다.
 
-2. 리소스 메뉴의 **설정**에서 **데이터베이스**를 선택하고 `rentals` 데이터베이스에 대한 **연결**을 선택합니다.
+2. 리소스 메뉴의 **설정**에서 **데이터베이스**를 선택하고 `rentals` 데이터베이스에 대한 **연결**을 선택합니다. **연결**을 선택해도 실제로 데이터베이스에 연결되지는 않습니다. 다양한 방법을 사용하여 데이터베이스에 연결하기 위한 지침만 제공합니다. **브라우저에서 또는 로컬로 연결** 지침을 검토하고 해당 지침에 따라 Azure Cloud Shell을 사용하여 연결합니다.
 
-    ![Azure Database for PostgreSQL 데이터베이스 페이지의 스크린샷. rentals 데이터베이스에 대한 데이터베이스 및 연결이 빨간색 상자로 강조 표시됩니다.](media/13-postgresql-rentals-database-connect.png)
+    ![Azure Database for PostgreSQL 데이터베이스 페이지의 스크린샷. 임대 데이터베이스에 대한 데이터베이스 및 연결이 빨간색 상자로 강조 표시됩니다.](media/13-postgresql-rentals-database-connect.png)
 
 3. Cloud Shell의 "사용자 pgAdmin에 대한 암호" 프롬프트에서 **pgAdmin** 로그인에 대해 임의로 생성된 암호를 입력합니다.
 
@@ -204,7 +204,7 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
 ## 포함 벡터 만들기 및 저장
 
-이제 샘플 데이터가 있으므로 포함 벡터를 생성하고 저장할 차례입니다. `azure_ai` 확장을 사용하면 Azure OpenAI 포함 API를 쉽게 호출할 수 있습니다.
+이제 샘플 데이터가 있으므로 포함 벡터를 생성하고 저장할 차례입니다. `azure_ai` 확장을 사용하면 Azure OpenAI 포함 API를 쉽게 호출할 수 있습니다.
 
 1. 포함 벡터 열을 추가합니다.
 
@@ -240,9 +240,9 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
 ## 의미 체계 검색 쿼리 수행
 
-이제 임베딩 벡터를 사용하여 증강된 데이터를 나열했으므로 의미 체계 검색 쿼리를 실행해야 합니다. 이렇게 하려면 쿼리 문자열 임베딩 벡터를 가져와서 코사인 검색을 수행하여 설명이 쿼리와 가장 의미상 유사한 목록을 찾습니다.
+이제 포함 벡터를 사용하여 증강된 데이터를 나열했으므로 의미 체계 검색 쿼리를 실행해야 합니다. 이렇게 하려면 쿼리 문자열 포함 벡터를 가져와서 코사인 검색을 수행하여 설명이 쿼리와 가장 의미상 유사한 목록을 찾습니다.
 
-1. 쿼리 문자열에 대한 임베딩을 생성합니다.
+1. 쿼리 문자열에 대한 포함을 생성합니다.
 
     ```sql
     SELECT azure_openai.create_embeddings('embedding', 'bright natural light');
@@ -255,13 +255,13 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
     create_embeddings | {-0.0020871465,-0.002830255,0.030923981, ...}
     ```
 
-1. 코사인 검색(`<=>`은(는) 코사인 거리 연산을 의미)에 임베딩을 사용하여 가장 유사한 상위 10개의 목록을 쿼리에 가져옵니다.
+1. 코사인 검색(`<=>`은(는) 코사인 거리 연산을 의미)에 포함을 사용하여 가장 유사한 상위 10개의 목록을 쿼리에 가져옵니다.
 
     ```sql
     SELECT id, name FROM listings ORDER BY listing_vector <=> azure_openai.create_embeddings('embedding', 'bright natural light')::vector LIMIT 10;
     ```
 
-    다음과 비슷한 결과가 표시됩니다. 임베딩 벡터가 결정적이지 않을 수 있으므로 결과는 달라질 수 있습니다.
+    다음과 비슷한 결과가 표시됩니다. 포함 벡터가 결정적이지 않을 수 있으므로 결과는 달라질 수 있습니다.
 
     ```sql
         id    |                name                
@@ -296,7 +296,7 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
 ## 작업 확인
 
-위의 단계를 수행한 후, `listings` 테이블에는 Kaggle의 [Seattle Airbnb Open Data](https://www.kaggle.com/datasets/airbnb/seattle/data?select=listings.csv)의 샘플 데이터가 포함되어 있습니다. 목록은 의미 체계 검색을 실행하기 위해 임베딩 벡터로 증강되었습니다.
+위의 단계를 수행한 후, `listings` 테이블에는 Kaggle의 [Seattle Airbnb Open Data](https://www.kaggle.com/datasets/airbnb/seattle/data?select=listings.csv)의 샘플 데이터가 포함되어 있습니다. 목록은 의미 체계 검색을 실행하기 위해 포함 벡터로 증강되었습니다.
 
 1. 목록 테이블에 4개의 열(`id`, `name`, `description`, `listing_vector`)이 있는지 확인합니다.
 
@@ -324,7 +324,7 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
     SELECT COUNT(*) > 0 FROM listings WHERE listing_vector IS NOT NULL;
     ```
 
-    결과는 TRUE를 의미하는 `t`(으)로 표시되어야 합니다. 해당 설명 열의 임베딩이 포함된 행이 적어도 한 개 있다는 표시입니다.
+    결과는 TRUE를 의미하는 `t`(으)로 표시되어야 합니다. 해당 설명 열의 포함이 들어있는 행이 적어도 한 개 이상 있다는 표시입니다.
 
     ```sql
     ?column? 
@@ -333,7 +333,7 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
     (1 row)
     ```
 
-    임베딩 벡터의 차원이 1536개인지 확인합니다.
+    포함 벡터의 차원이 1536개인지 확인합니다.
 
     ```sql
     SELECT vector_dims(listing_vector) FROM listings WHERE listing_vector IS NOT NULL LIMIT 1;
@@ -350,13 +350,13 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
 
 1. 의미 체계 검색이 결과를 반환하는지 확인합니다.
 
-    코사인 검색에 임베딩을 사용하여 가장 유사한 상위 10개 목록을 쿼리에 가져옵니다.
+    코사인 검색에 포함을 사용하여 가장 유사한 상위 10개 목록을 쿼리에 가져옵니다.
 
     ```sql
     SELECT id, name FROM listings ORDER BY listing_vector <=> azure_openai.create_embeddings('embedding', 'bright natural light')::vector LIMIT 10;
     ```
 
-    임베딩 벡터가 할당된 행에 따라 다음과 같은 결과가 표시됩니다.
+    포함 벡터가 할당된 행에 따라 다음과 같은 결과가 표시됩니다.
 
     ```sql
      id |                name                
