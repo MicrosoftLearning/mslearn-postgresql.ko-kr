@@ -237,7 +237,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
     서버 이름은 Azure Portal의 **개요**에서 찾을 수 있으며, bicep 스크립트 또는 Azure 에서 출력으로 확인할 수 있습니다.
 
     ```sql
-   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin postgres
+   psql -h <servername>.postgres.database.azure.com -p 5432 -U pgAdmin adventureworks
     ```
 
     이전에 복사한 관리자 계정의 비밀번호를 입력하라는 메시지가 표시됩니다.
@@ -272,7 +272,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
 1. 다음으로 `COPY` 명령을 사용하여 이전에 만든 테이블에 CSV 파일의 데이터를 로드합니다. 먼저 다음 명령을 사용하여 `production.workorder` 테이블을 채웁니다.
 
     ```sql
-    \COPY production.workorder FROM 'mslearn-postgresql/Allfiles/Labs/08/Lab8_workorder.csv' CSV HEADER
+    \COPY production.workorder FROM 'Allfiles/Labs/08/Lab8_workorder.csv' CSV HEADER
     ```
 
     명령 출력은 `COPY 72591`이(가) 되어야 하며, 이는 72,591개의 행이 CSV 파일에서 테이블에 기록되었음을 나타냅니다.
@@ -355,7 +355,7 @@ psql -h <servername> -p <port> -U <username> <dbname>
 
 1. *첫 번째* 쿼리 창으로 돌아가서 해당 창에서 쿼리를 다시 실행합니다.
 
-1. 첫 번째 행의 **stockedqty** 값은 여전히 **673**입니다. 쿼리가 데이터의 스냅샷을 사용하고 있으며 다른 트랜잭션의 업데이트가 표시되지 않습니다.
+1. 첫 번째 행의 **scrappedqty** 값은 아직도 **673**입니다. 쿼리가 데이터의 스냅샷을 사용하고 있으며 다른 트랜잭션의 업데이트가 표시되지 않습니다.
 
 1. *두 번째* 쿼리 탭을 선택하고 기존 쿼리를 삭제한 후 다음 쿼리를 입력하고 **실행**을 선택합니다.
 
