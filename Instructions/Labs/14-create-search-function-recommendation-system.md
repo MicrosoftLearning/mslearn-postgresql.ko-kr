@@ -151,7 +151,7 @@ Bicep 배포 스크립트를 실행할 때 몇 가지 오류가 발생할 수 �
     SELECT azure_ai.set_setting('azure_openai.subscription_key', '<API Key>');
     ```
 
-## 샘플 데이터를 이용해 데이터베이스 작성
+## 샘플 데이터를 이용해 데이터베이스 작성.
 
 `azure_ai` 확장을 탐색하기 전에 `rentals` 데이터베이스에 테이블을 몇 개 추가하고 샘플 데이터로 채워 확장의 기능을 검토할 때 사용할 정보를 준비합니다.
 
